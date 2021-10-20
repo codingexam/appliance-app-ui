@@ -1,24 +1,26 @@
 import axios from 'axios';
+import config from '../config'
 
 class ApplianceService {
     retrieveAllAppliances(user){
-        return axios.get(`http://localhost:8080/users/${user}/appliances`)
+        return axios.get(`${config.API_URL}/api/appliances`)
     }
 
     deleteAppliance(name, serialNum){
-        return axios.delete(`http://localhost:8080/users/${name}/appliances/${serialNum}`)
+        return axios.delete(`${config.API_URL}/api/appliance?serialNum=${serialNum}`)
     }
 
     retrieveAppliance(name, serialNum){
-        return axios.get(`http://localhost:8080/users/${name}/appliances/${serialNum}`)
+        return axios.get(`${config.API_URL}/api/appliance?serialNumber=${serialNum}`)
     }
 
     updateAppliance(name, serialNum, appliance){
-        return axios.put(`http://localhost:8080/users/${name}/appliances/${serialNum}`, appliance)
+        console.log("--update appliance", appliance)
+        return axios.put(`${config.API_URL}/api/appliance`, appliance)
     }
 
     createAppliance(name, appliance){
-        return axios.post(`http://localhost:8080/users/${name}/appliances`, appliance)
+        return axios.post(`${config.API_URL}/api/appliance`, appliance)
     }
 }
 

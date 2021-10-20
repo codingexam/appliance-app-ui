@@ -5,7 +5,7 @@ export default class LoginComponent extends React.Component{
     constructor(props){
         super(props);
         this.state = {
-            username: "test",
+            username: "",
             password: "",
             hasLoginFailed: false,
             showSuccessMessage: false
@@ -20,15 +20,19 @@ export default class LoginComponent extends React.Component{
     }
 
     loginClicked(){
-        if(this.state.username === 'test' && this.state.password === 'test'){
-            AuthenticationService.registerSuccesfulLogin(this.state.username, this.state.password);
-            this.props.history.push(`/home/${this.state.username}`)
-            // this.setState(() => ({ showSuccessMessage: true, 
-            //     hasLoginFailed: false }))
-        }else{
-            this.setState(() => ({ showSuccessMessage: false,
-                hasLoginFailed: true }))
-        }
+       AuthenticationService
+        .executeJwtAuthenticationService(this.state.username, this.state.password)
+        // .executeJwtAuthenticationService('admin', 'admin123')
+            .then((response) => {
+                console.log(response)
+                AuthenticationService.registerSuccesfulLoginForJwt(this.state.username, response.data)
+                this.props.history.push(`/home/${this.state.username}`) 
+            })
+            .catch((err) => {
+                console.log(err)
+                this.setState({ showSuccessMessage: false})
+                this.setState({ hasLoginFailed: true})
+            })
     }
 
     render(){

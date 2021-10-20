@@ -8,9 +8,9 @@ export default class AppliancesComponent extends React.Component{
         super(props);
         this.state = {
             appliances: [
-                {serialNum: 1, brand: "LG", model: "TV",status: "In use", dateBought: moment(new Date()).format('YYYY-MM-DD')},
-                {serialNum: 2, brand: "APPLE", model: "Computer", status: "Not in use", dateBought: moment(new Date()).format('YYYY-MM-DD')},
-                {serialNum: 3, brand: "Samsung", model: "Speaker", status: "", dateBought: moment(new Date()).format('YYYY-MM-DD')}
+                // {serialNum: 1, brand: "LG", model: "TV",status: "In use", dateBought: moment(new Date()).format('YYYY-MM-DD')},
+                // {serialNum: 2, brand: "APPLE", model: "Computer", status: "Not in use", dateBought: moment(new Date()).format('YYYY-MM-DD')},
+                // {serialNum: 3, brand: "Samsung", model: "Speaker", status: "", dateBought: moment(new Date()).format('YYYY-MM-DD')}
             ],
             message: ""
         };
@@ -24,7 +24,10 @@ export default class AppliancesComponent extends React.Component{
     componentDidMount(){
         const username = AuthenticationService.getLoggedInUsername()
         ApplianceDataService.retrieveAllAppliances(username)
-        .then((res) => this.handleSuccessfulResponse(res))
+        .then((res) => {
+            console.log(res.data)
+            this.handleSuccessfulResponse(res)
+        })
     }
 
     handleSuccessfulResponse(response){
@@ -61,7 +64,7 @@ export default class AppliancesComponent extends React.Component{
         return(
             <div>
                 <h2>List of Appliances</h2>
-                {this.state.message != "" ? <div className="alert alert-success">{this.state.message}</div> : ""}
+                {this.state.message !== "" ? <div className="alert alert-success">{this.state.message}</div> : ""}
                 <div className="container">
                     <table className="table">
                         <thead>
@@ -78,13 +81,13 @@ export default class AppliancesComponent extends React.Component{
                         <tbody>
                             {this.state.appliances && this.state.appliances.length > 0 && 
                             this.state.appliances.map((appliance) => (
-                                <tr key={appliance.serialNum}>
+                                <tr key={appliance.serialNumber}>
                                     <td>{appliance.brand}</td>
                                     <td>{appliance.model}</td>
                                     <td>{appliance.status}</td>
                                     <td>{moment(appliance.dateBought).format('YYYY-MM-DD')}</td>
-                                    <td><button className="btn btn-primary" onClick={() => this.updateApplianceClicked(appliance.serialNum)}>Update</button></td>
-                                    <td><button className="btn btn-primary" onClick={() => this.deleteApplianceClicked(appliance.serialNum)}>Delete</button></td>
+                                    <td><button className="btn btn-primary" onClick={() => this.updateApplianceClicked(appliance.serialNumber)}>Update</button></td>
+                                    <td><button className="btn btn-primary" onClick={() => this.deleteApplianceClicked(appliance.serialNumber)}>Delete</button></td>
                                 </tr>
                             ))}
                         </tbody>

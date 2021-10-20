@@ -12,23 +12,39 @@ export default class ApplianceComponent extends React.Component{
             serialNum: this.props.match.params.serialNum,
             brand: "",
             model: "",
-            applianceStatus: [],
-            dateBought: moment(new Date()).format('YYYY-MM-DD')
+            applianceStatus: ["Active", "Inactive"],
+            dateBought: moment(new Date()).format('YYYY-MM-DD'),
+            status:''
         };
         this.onSubmit = this.onSubmit.bind(this);
         this.validate = this.validate.bind(this);
+        this.loadAppliance = this.loadAppliance.bind(this);
+        this.setStatusValue = this.setStatusValue.bind(this);
+    }
+
+    setStatusValue(val){
+        this.setState(() => ({
+            status: val
+        }))
     }
 
     onSubmit(values){
         const username = AuthenticationService.getLoggedInUsername();
         const appliance = {
-            serialNum: this.state.serialNum,
+            serialNumber: this.state.serialNum,
             brand: values.brand,
             model: values.model,
-            applianceStatus: values.applianceStatus,
+            status: this.state.status,
             dateBought: values.dateBought
         }
-        if(this.state.serialNum === -1){
+        // const appliance = {
+        //     "serialNumber": 1013,
+        //     "brand": "samsungsss",
+        //     "model": "A100",
+        //     "status": "active",
+        //     "dateBought": "2021-10-18"
+        // }
+        if(this.state.serialNum == -1){
             ApplianceService.createAppliance(username, appliance)
             .then(() => {
                 this.props.history.push('/appliances')
@@ -45,13 +61,13 @@ export default class ApplianceComponent extends React.Component{
         let errors = {}
         if (!values.brand){
             errors.brand = "Enter a brand"
-        } else if (values.brand.length < 5){
+        } else if (values.brand.length < 2){
             errors.brand = "Enter atleast 5 characters for brand"
         }
 
         if (!values.model){
             errors.model = "Enter a model"
-        } else if (values.model.length < 5){
+        } else if (values.model.length < 2){
             errors.model = "Enter atleast 5 characters for model"
         }
 
@@ -62,17 +78,24 @@ export default class ApplianceComponent extends React.Component{
     }
 
     componentDidMount(){
-        if(this.state.serialNum === -1){
+        if(this.state.serialNum == -1){
             return
         }
         const user = AuthenticationService.getLoggedInUsername();
         ApplianceService.retrieveAppliance(user, this.state.serialNum)
-        .then((response) => this.setState(() => ({
+        .then((response) => {
+            this.loadAppliance(response)
+        })
+    }
+
+    loadAppliance(response){
+        // const status = respons
+        this.setState(() => ({
             brand: response.data.brand,
             model: response.data.model,
-            applianceStatus: response.data.status,
+            // applianceStatus: response.data.status,
             dateBought: moment(response.data.dateBought).format('YYYY-MM-DD')
-        })))
+        }))
     }
 
     render(){
@@ -110,13 +133,17 @@ export default class ApplianceComponent extends React.Component{
                                     <br/>
                                     <fieldset className="form-group">
                                         <label>Status</label>
-                                        <Field className="form-control" as="select" name="applianceStatus">
+                                        <select 
+                                            className="form-control" 
+                                            name="applianceStatus"
+                                            onChange={(e) => this.setStatusValue(e.target.value)}
+                                            >
                                             {this.state.applianceStatus && this.state.applianceStatus.length > 0
                                                 && this.state.applianceStatus.map((status) => (
-                                                    <option key={status.id} value={status.description}></option>
+                                                <option key={status} value={status}>{status}</option>
                                                 ))
                                                 }
-                                        </Field>
+                                        </select>
                                     </fieldset>
                                     <br/>
                                     <fieldset className="form-group">
